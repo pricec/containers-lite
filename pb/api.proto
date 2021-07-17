@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/pricec/containers-lite/pb";
+
+message ResourceLimits {
+  uint32 memory_in_mib = 1;
+  uint32 cpu_millicores = 2;
+  uint32 disk_read_mbps = 3;
+  uint32 disk_write_mbps = 4;
+}
+
+message LaunchConfiguration {
+  string command = 1;
+  repeated string args = 2;
+  ResourceLimits limits = 3;
+}
+
+message OutputRequest {
+  ProcessHandle id = 1;
+  bool stream = 2;
+}
+
+message ProcessStatus {
+  enum State {
+    STARTED = 0;
+    STOPPED = 1;
+    EXITED = 2;
+  }
+  State state = 1;
+  int32 exit_code = 2;
+  string exit_error = 3;
+}
+
+message ProcessHandle {
+  string value = 1;
+}
+
+message ProcessOutput {
+  bytes value = 1;
+}
+
+service WorkerService {
+  rpc Create(LaunchConfiguration) returns (ProcessHandle) {}
+  rpc Stop(ProcessHandle) returns (google.protobuf.Empty) {}
+  rpc Status(ProcessHandle) returns (ProcessStatus) {}
+  rpc Output(OutputRequest) returns (stream ProcessOutput) {}
+  rpc Error(OutputRequest) returns (stream ProcessOutput) {}
+}
