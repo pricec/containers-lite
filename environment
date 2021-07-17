@@ -1,0 +1,45 @@
+SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+SERVER_BIN="${SOURCE_DIR}/bin/server"
+CLIENT_BIN="${SOURCE_DIR}/bin/client"
+
+TLS_DIR="${SOURCE_DIR}/test/tls"
+CA_CERT="${TLS_DIR}/ca.crt"
+SERVER_CERT="${TLS_DIR}/server.crt"
+SERVER_KEY="${TLS_DIR}/server.key"
+CLIENT_CERT="${TLS_DIR}/client.crt"
+CLIENT_KEY="${TLS_DIR}/client.key"
+UNPRIV_CLIENT_CERT="${TLS_DIR}/uclient.crt"
+UNPRIV_CLIENT_KEY="${TLS_DIR}/uclient.key"
+SERVER_CERT_CN="containers-lite.server"
+CLIENT_CERT_CN="containers-lite.client"
+UNPRIV_CLIENT_CERT_CN="containers-lite.uclient"
+
+function server() {
+    sudo ${SERVER_BIN} \
+         --ca-cert ${CA_CERT} \
+         --cert ${SERVER_CERT} \
+         --key ${SERVER_KEY} \
+         --admin-cn ${CLIENT_CERT_CN} \
+         --user-cn ${UNPRIV_CLIENT_CERT_CN} \
+         --debug \
+         "$@"
+}
+
+function client() {
+    ${CLIENT_BIN} \
+        --ca-cert ${CA_CERT} \
+        --cert ${CLIENT_CERT} \
+        --key ${CLIENT_KEY} \
+        --server-name ${SERVER_CERT_CN} \
+        "$@"
+}
+
+function uclient() {
+    ${CLIENT_BIN} \
+        --ca-cert ${CA_CERT} \
+        --cert ${UNPRIV_CLIENT_CERT} \
+        --key ${UNPRIV_CLIENT_KEY} \
+        --server-name ${SERVER_CERT_CN} \
+        "$@"
+}
