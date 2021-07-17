@@ -20,7 +20,7 @@ GO_TEST := docker run $(GO_TEST_FLAGS) $(GO_IMAGE) go test
 PROTOC  := docker run $(PROTOC_FLAGS) $(PROTOC_IMAGE)
 
 .PHONY: test
-test:
+test: protobuf
 	$(GO_TEST) -race -cover $(MOD_PATH)/...
 
 protobuf: $(PROTOBUF_DEP)
